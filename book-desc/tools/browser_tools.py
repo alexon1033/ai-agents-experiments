@@ -1,7 +1,8 @@
 import json
 import os
 
-import requests
+import urllib
+import urllib.request
 from crewai import Agent, Task
 from langchain.tools import tool
 from unstructured.partition.html import partition_html
@@ -9,13 +10,13 @@ from unstructured.partition.html import partition_html
 class BrowserTools():
     
     @tool("Scrape website content")
-    def scrape_and_summarize_content(website):
+    def scrape_and_summarize_content(url):
         """Useful to scrape and summarize a website content"""
-        url = f"https://chrome.browserless.io/content?token={os.environ['BROWSERLESS_API_KEY']}"
-        payload = json.dumps({"url": website})
-        headers = {'cache-control': 'no-cache', 'content-type': 'application/json'}
-        response = requests.request("POST", url, headers=headers, data=payload)
-        elements = partition_html(text=response.text)
+
+        req = urllib.request.Request(url, headers={'Magic Browser'})
+        con = urllib.request.urlopen(req).read()
+
+        elements = partition_html(text=response)
         content = "\n\n".join([str(el) for el in elements])
         content = [content[i:i + 8000] for i in range(0, len(content), 8000)]
         summaries = []
@@ -31,7 +32,9 @@ class BrowserTools():
             task = Task(
                 agent=agent,
                 description=
-                f'Analyze and summarize the content below, make sure to include the most relevant information in the summary, return only the summary nothing else.\n\nCONTENT\n----------\n{chunk}'
+                f'Analyze and summarize the content below, make sure to include the most relevant information in the summary, return only the summary nothing else.\n\nCONTENT\n----------\n{chunk}',
+                expected_output=
+                'A few sentances of summary containing the most relevent information.'
         )
         summary = task.execute()
         summaries.append(summary)
