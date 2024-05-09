@@ -43,7 +43,7 @@ class BookCrew():
         result = crew.kickoff()
         return result
 
-if __name == '__main__':
+if __name__ == '__main__':
     book = input("Enter Book title: ")
 
     book_crew = BookCrew(book)

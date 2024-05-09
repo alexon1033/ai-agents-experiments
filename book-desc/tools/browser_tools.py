@@ -10,7 +10,7 @@ from unstructured.partition.html import partition_html
 class BrowserTools():
     
     @tool("Scrape website content")
-    def scrape_and_summarize_content(url):
+    def scrape_and_summarize_website(url):
         """Useful to scrape and summarize a website content"""
 
         req = urllib.request.Request(url, headers={'Magic Browser'})

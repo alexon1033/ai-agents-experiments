@@ -1,9 +1,7 @@
 from crewai import Agent
 
 from tools.browser_tools import BrowserTools
-from tools.calculator_tools import CalculatorTools
 from tools.search_tools import SearchTools
-from tools.sec_tools import SECTools
 
 from langchain.tools.yahoo_finance_news import YahooFinanceNewsTool
 
