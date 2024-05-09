@@ -22,6 +22,7 @@ class BookCrew():
         research_task = tasks.research()
         description_task = tasks.description()
         valuation_task = tasks.valuation()
+        final_task = tasks.final_output()
 
         crew = Crew(
             agents=[
@@ -32,9 +33,11 @@ class BookCrew():
             tasks=[
                 research_task,
                 description_task,
-                valuation_task
+                valuation_task,
+                final_task
             ],
-            verbose=True
+            verbose=True,
+            rpm=3
         )
 
         result = crew.kickoff()
@@ -45,4 +48,4 @@ if __name == '__main__':
 
     book_crew = BookCrew(book)
     result = book_crew.run()
-    print("Result")
+    print(result)
