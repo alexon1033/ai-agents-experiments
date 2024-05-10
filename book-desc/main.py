@@ -12,17 +12,17 @@ class BookCrew():
         self.booktitle = booktitle
 
     def run(self):
-        agents = BookDescriptionAgents
-        tasks = BookDescriptionTasks
+        agents = BookDescriptionAgents()
+        tasks = BookDescriptionTasks()
 
         research_agent = agents.researcher()
         description_agent = agents.describer()
         valuation_agent = agents.valuer()
 
-        research_task = tasks.research()
-        description_task = tasks.description()
-        valuation_task = tasks.valuation()
-        final_task = tasks.final_output()
+        research_task = tasks.research(research_agent, self.booktitle)
+        description_task = tasks.description(description_agent)
+        valuation_task = tasks.valuation(valuation_agent, self.booktitle)
+        final_task = tasks.final_output(description_agent)
 
         crew = Crew(
             agents=[
@@ -37,7 +37,8 @@ class BookCrew():
                 final_task
             ],
             verbose=True,
-            rpm=3
+            max_rpm=1,
+            max_tpm=10000
         )
 
         result = crew.kickoff()

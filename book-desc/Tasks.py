@@ -36,7 +36,7 @@ class BookDescriptionTasks():
         agent=agent
         )
 
-    def valutation(self, agent, booktitle):
+    def valuation(self, agent, booktitle):
         return Task(description=dedent(f"""
             Using the descriptions and research estimate an optimal value of the book for
             selling as a used copy. This price should be fair, so that someone will be willing to pay

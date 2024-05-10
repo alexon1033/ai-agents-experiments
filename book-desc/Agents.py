@@ -4,21 +4,15 @@ from langchain.agents import Tool
 
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from crewai_tools import ScrapeWebsiteTool
+from crewai_tools import SerperDevTool
 
-os.environ['SERPER_API_KEY']='Kaf9cfc22ca2e7e5a4a091e3163204b93fec13706'
 
-googleapiwrapper = GoogleSerperAPIWrapper()
 
-search_tool = Tool(
-    name="Search tool",
-    func=googleapiwrapper.run,
-    description="Useful for searching the internet"
-)
-
+search_tool = SerperDevTool()
 scrape_tool = ScrapeWebsiteTool()
 
 class BookDescriptionAgents():
-    def researcher():
+    def researcher(self):
         return Agent(
             role="Book research analyst",
             goal="Find comprehenive information on a given book on the internet",
@@ -31,7 +25,7 @@ class BookDescriptionAgents():
             ]
         )
 
-    def describer():
+    def describer(self):
         return Agent(
             role="Book description writer",
             goal="write book descriptions for a sales page. Make sure the descriptions are compelling yet factual.",
@@ -44,7 +38,7 @@ class BookDescriptionAgents():
             ]
         )
 
-    def valuer():
+    def valuer(self):
         return Agent(
             role="Book salesman",
             goal="Value a book for second-hand sale.",
@@ -56,3 +50,4 @@ class BookDescriptionAgents():
                 scrape_tool
             ]
         )
+
