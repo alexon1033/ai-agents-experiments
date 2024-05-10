@@ -1,9 +1,21 @@
+import os
 from crewai import Agent
+from langchain.agents import Tool
 
-from tools.browser_tools import BrowserTools
-from tools.search_tools import SearchTools
+from langchain_community.utilities import GoogleSerperAPIWrapper
+from crewai_tools import ScrapeWebsiteTool
 
-from langchain.tools.yahoo_finance_news import YahooFinanceNewsTool
+os.environ['SERPER_API_KEY']='Kaf9cfc22ca2e7e5a4a091e3163204b93fec13706'
+
+googleapiwrapper = GoogleSerperAPIWrapper()
+
+search_tool = Tool(
+    name="Search tool",
+    func=googleapiwrapper.run,
+    description="Useful for searching the internet"
+)
+
+scrape_tool = ScrapeWebsiteTool()
 
 class BookDescriptionAgents():
     def researcher():
@@ -14,8 +26,8 @@ class BookDescriptionAgents():
                         information about a book""",
             verbose=True,
             tools=[
-                BrowserTools.scrape_and_summarize_website,
-                SearchTools.search_internet
+                search_tool,
+                scrape_tool
             ]
         )
 
@@ -27,8 +39,8 @@ class BookDescriptionAgents():
                         paragraphs.""",
             verbose=True,
             tools=[
-                BrowserTools.scrape_and_summarize_website,
-                SearchTools.search_internet
+                search_tool,
+                scrape_tool
             ]
         )
 
@@ -40,7 +52,7 @@ class BookDescriptionAgents():
                          based on research. You run a business and need to make sure you sell 
                          a book in good time but not too cheap.""",
             tools=[
-                BrowserTools.scrape_and_summarize_website,
-                SearchTools.search_internet
+                search_tool,
+                scrape_tool
             ]
         )
