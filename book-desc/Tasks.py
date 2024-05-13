@@ -58,7 +58,7 @@ class BookDescriptionTasks():
                 Take the information from your collegues and compile it into a final report for your customer.
                 Make sure to include all the key information required for selling the book. Lay out the information in a neat tabular report.
             """),
-            expected_output="A table of information on the book",
+            expected_output="A table of information on the book including everything needed to sell it.",
             agent=agent
         )
 
