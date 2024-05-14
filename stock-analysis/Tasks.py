@@ -1,8 +1,16 @@
 from crewai import Task
 from textwrap import dedent
 
-class DataGatheringTasks():
-    def collect_company_information(self, company, agent):
+def __tip_section():
+    return dedent("""
+        You have access to the internet. Use the search tool to find websites and use the scrape tool to extract data from them. Only use information you find online or is given to you,
+        do not make up information as you could lose your job. Always fact check your ideas or infromation given to you by collegues using the internet.
+        
+        If you do your BEST WORK ill give you a bonus of $10,000!
+        """)
+
+class StockTasks():
+    def collect_company_information(self, agent, company):
         return Task(description=dedent(f"""
             Task: Collect comprehensive information about a specific company.
             
@@ -23,21 +31,18 @@ class DataGatheringTasks():
 
             Challenges and Opportunities: Analyze any major challenges the company is currently facing or opportunities it might be positioned to take advantage of.
 
-            Future Outlook: Provide insights on the company's future direction based on recent announcements or market trends.
-
-            You have access to the internet. Use the search tool to find websites and use the scrape tool to extract data from them. Only use information you find online,
-            do not make up information as it could lose you your job.
+            Future Outlook: Provide insights on the company's future direction based on recent announcements or market trends..
             
             Sources: Utilize reputable business news websites, the company's official website, financial databases, and industry reports to gather information.
             Ensure all data is up-to-date and cite sources accordingly. 
 
-            {__tip_section}
+            {__tip_section()}
             """),
             expected_output="Present the information in a structured report format, with clear headings for each section and bullet points for key details. Include hyperlinks to sources where applicable.",
             agent=agent
         )
 
-    def collect_financial_statements(company, agent):
+    def collect_financial_statements(self, agent, company):
         return Task(description=dedent(f"""
             Objective: Your task is to collect comprehensive financial statements for a specific company for the last five fiscal years. You will need to access balance
             sheets, income statements, and cash flow statements.
@@ -62,16 +67,13 @@ class DataGatheringTasks():
 
             Report Back: Summarize the retrieval process. Provide information about the balance sheets, cashflow and any other information of note to your collegues.
 
-            You have access to the internet. Use the search tool to find websites and use the scrape tool to extract data from them. Only use information you find online,
-            do not make up information as it could lose you your job.
-
-            {__tip_section}
+            {__tip_section()}
             """),
             expected_output="You should provide a comprehensive collection of financial statements organized by type and fiscal year, with a clear summary of your process and any observations or discrepancies noted during the collection.",
             agent=agent
         )
 
-    def research_market_and_trends(company):
+    def research_market_and_trends(self, agent, company):
         return Task(description=dedent(f"""
             You are tasked with performing comprehensive market research on the company {company}. 
             Your goal is to provide a detailed analysis that includes the following aspects:
@@ -102,16 +104,14 @@ class DataGatheringTasks():
 
             Maintain an objective and analytical tone throughout the report. Ensure that all information is clear, concise, and logically organized.
 
-            You have access to the internet. Use the search tool to find websites and use the scrape tool to extract data from them. Only use information you find online,
-            do not make up information as upu could lose your job.
-
-            {__tip_section}
+            {__tip_section()}
             """),
-            expected_output="A market ananlysis report Ensure that all information is clear, concise, and logically organized."
+            expected_output="A market ananlysis report Ensure that all information is clear, concise, and logically organized.",
+            agent=agent,
+            context=[self.collect_company_information, self.collect_financial_statements]
         )
 
-class FundamentalAnalysisTasks():
-    def analyze_financial_statements(company):
+    def analyze_financial_statements(self, agent, company):
         return Task(description=dedent(f"""
             1. Gather and Organize the Financial Statements.
             Ensure you have the three core financial statements:
@@ -146,18 +146,21 @@ class FundamentalAnalysisTasks():
             Notes to the Financial Statements: Provides essential details that complement the figures on the financial statements, such as accounting policies,
             contingencies, and risk management.
             
-            7. Prepare a Written Report
+            {__tip_section()}
+            """),
+            expected_output=dedent("""7. Prepare a Written Report
             Compile your findings into a structured report that includes:
 
             Executive Summary: Overview of the financial health and performance trends.
 
             Detailed Analysis: Comprehensive details of your analyses, supported by charts and graphs.
             
-            Conclusions and Recommendations: Final assessment of the financial health, potential concerns, and strategic recommendations.
-            """),
+            Conclusions and Recommendations: Final assessment of the financial health, potential concerns, and strategic recommendations."""),
+            context=[self.collect_company_information, self.collect_financial_statements],
+            agent=agent
     )
 
-    def calculate_financial_ratios(company):
+    def calculate_financial_ratios(self, agent, company):
         return Task(description=dedent(f"""
             Calculate Key Financial Ratios.
 
@@ -169,35 +172,46 @@ class FundamentalAnalysisTasks():
             Profitability Ratios (e.g., Gross Profit Margin, Return on Equity): Evaluate the company’s efficiency in using its resources to generate profits.
 
             Efficiency Ratios (e.g., Asset Turnover, Inventory Turnover): Examine how effectively the company uses its assets.
+
+            {__tip_section()}
             """),
+            expected_ouput="A list of financial ratios for the given company name and an interpretation of each.",
+            context=[self.collect_financial_statements],
+            agent=agent
         )
 
-    def evaluate_business_model(company):
-        return
+    def summarize(self, agent):
+        return Task(description=dedent(f"""
+            Summarize the information you have been provided with into a concice report. Make sure to stick to the facts and make
+            each point only once. Make sure to include all the important details. 
 
-    def summarize():
-        return
-
-class SentimentAnalysisTasks():
-    def review_forecasts(company):
-        return
-
-    def review_news(company):
-        return
-
-    def review_social(company):
-        return
-
-    def summarize():
-        return
-
-class FinalAnalysisTasks():
-    def summarize_findings():
-        return
+            {__tip_section()}   
+            """),
+            expected_output="A report summarizing all the facts.",
+            agent=agent,
+            context=[self.calculate_financial_ratios, self.analyze_financial_statements]
+        )
 
     def draw_conslusions():
-        return
+        return Task(description=dedent(f"""
+            Using the infromation provided to you by the summary report on the company, use your business knowledge to draw conclusions and make preictions with this information.
+
+            {__tip_section()}
+            """),
+            expected_output="Place your consclusions and forecasts in a single report and justify each point.",
+            agent=agent,
+            context=[self.summarize])
 
     def make_recommendation():
-        return
+        return Task(description=dedent(f"""
+            Make a final report for the customer. This report must contain a recommendation to buy, hold or sell based on the infromation you have been provided.
+            Add justifications to make sure the customer understands why you make your recommendation.
+
+            {__tip_section}
+            """),
+            expected_output=dedent("""A final report for the customer. Must contain a recommendation to buy, sell or hold based on your reasoning. Make sure it is comprehensive 
+            and readable. Make it pretty for your customer/"""),
+            agent=agent,
+            context=[self.draw_conclusions]
+        )
 
